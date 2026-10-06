@@ -1,0 +1,22 @@
+{
+  "name": "carta-digital-pizzeria",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@fontsource-variable/archivo": "^5.3.0",
+    "@fontsource/archivo-black": "^5.3.0",
+    "astro": "^7.2.7"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/node": "^26.3.0",
+    "typescript": "^6.0.3"
+  }
+}

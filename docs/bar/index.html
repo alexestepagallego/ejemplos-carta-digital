@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cocktail Bar · Carta digital (demo)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        html {
+            background-color: #0A0A0A;
+            /* Negro profundo */
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            color: #EDEDED;
+            background-color: transparent;
+            letter-spacing: 0.05em;
+            min-height: 100dvh;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: 0 auto;
+            max-width: 28rem;
+            /* Ancho de teléfono móvil (max-w-md de Tailwind) */
+            background-image: radial-gradient(ellipse at 20% 0%, rgba(255,140,40,.22), transparent 55%), radial-gradient(ellipse at 90% 100%, rgba(255,191,0,.12), transparent 50%);
+            background-size: cover;
+            background-position: center;
+            opacity: 0.30;
+            /* Sube la opacidad (0 a 1) para que se vea más nítido */
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .font-title {
+            font-family: 'Quicksand', sans-serif;
+            letter-spacing: 0.15em;
+        }
+
+        /* Colores Neón personalizados */
+        .text-neon-amber {
+            color: #FFFFFF;
+            text-shadow: 0 0 8px #FFBF00, 0 0 12px #FFBF00;
+        }
+
+        .border-neon-amber {
+            border-color: #FFBF00;
+            box-shadow: 0 0 10px rgba(255, 191, 0, 0.5), inset 0 0 5px rgba(255, 191, 0, 0.2);
+        }
+
+        .bg-dark-panel {
+            background-color: #121212;
+        }
+
+        .bg-card {
+            background-color: #1A1A1A;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .no-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        #dish-detail {
+            transform: translateY(100%);
+            visibility: hidden;
+            transition: transform 0.5s ease-in-out, visibility 0s linear 0.5s;
+        }
+
+        #dish-detail.open {
+            transform: translateY(0);
+            visibility: visible;
+            transition: transform 0.5s ease-in-out, visibility 0s linear 0s;
+        }
+    </style>
+</head>
+
+<body class="text-gray-200">
+
+    <header
+        class="max-w-md mx-auto bg-[#050505] text-white h-20 sticky top-0 z-50 flex justify-center items-center shadow-[0_5px_15px_rgba(0,0,0,0.8)] border-b border-[#333] relative">
+
+        <div id="header-title" class="absolute left-1/2 -translate-x-1/2 flex justify-center items-center">
+            <span id="header-logo" class="font-title text-white text-xl tracking-[0.45em] uppercase">Cocktail&nbsp;Bar</span>
+        </div>
+
+        <button id="btn-atras" onclick="history.back()"
+            class="hidden absolute left-4 text-xs bg-black px-3 py-2 rounded border border-neon-amber text-neon-amber font-title font-bold z-10 uppercase tracking-widest active:scale-95 transition-transform">
+            ← Volver
+        </button>
+    </header>
+
+    <main class="max-w-md mx-auto p-4">
+
+        <div id="vista-categorias" class="fade-in space-y-5 pb-32">
+            <h2 class="text-center text-2xl font-title my-6 text-white tracking-widest uppercase">
+                Nuestra carta
+            </h2>
+            <div id="contenedor-categorias-principal" class="space-y-5"></div>
+        </div>
+
+        <div id="vista-platos" class="hidden fade-in">
+            <h3 id="titulo-actual"
+                class="text-xl font-title mb-6 flex items-center uppercase tracking-[0.2em] text-neon-amber leading-tight">
+                <span class="w-10 h-[2px] bg-[#FFBF00] shadow-[0_0_8px_#FFBF00] mr-3 flex-shrink-0"></span>
+                CATEGORÍA
+            </h3>
+            <div id="grid-platos" class="grid grid-cols-2 gap-4 pb-32"></div>
+        </div>
+    </main>
+
+    <footer class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-[#050505] border-t border-[#333] shadow-[0_-5px_15px_rgba(0,0,0,0.8)] py-2 z-40">
+        <p class="text-center text-[8px] uppercase tracking-[0.2em] text-gray-500 font-title">Demo de carta digital · modelo de ejemplo</p>
+    </footer>
+
+    <div id="dish-detail"
+        class="fixed inset-0 max-w-md mx-auto z-[60] overflow-y-auto"
+        style="background-color: #050505;">
+
+        <button onclick="closeDetail()"
+            class="absolute top-6 right-6 bg-[#1A1A1A] text-white w-12 h-12 rounded shadow-2xl z-10 font-bold border border-neon-amber flex items-center justify-center text-xl active:scale-90 transition-transform">✕</button>
+
+        <div class="flex flex-col items-center justify-center min-h-screen p-6">
+
+            <div class="relative mb-10 mt-10">
+                <div
+                    class="w-60 h-60 rounded-full border-2 border-neon-amber overflow-hidden bg-card">
+                    <img id="detail-img" src="" class="w-full h-full object-cover opacity-90">
+                </div>
+                <div
+                    class="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-[#0A0A0A] px-6 py-2 rounded border border-neon-amber shadow-lg min-w-[120px] text-center">
+                    <span id="detail-price" class="text-neon-amber font-title font-bold text-xl tracking-[0.1em]"></span>
+                </div>
+            </div>
+
+            <div class="w-full bg-card rounded p-8 shadow-2xl border-t-4 border-[#FFBF00] relative drop-shadow-[0_-5px_15px_rgba(255,191,0,0.15)]">
+
+                <h2 id="detail-title"
+                    class="text-2xl font-title text-neon-amber text-center mb-6 uppercase tracking-[0.15em] leading-tight">
+                </h2>
+
+                <div class="space-y-8">
+                    <div class="text-center">
+                        <h4 class="text-[10px] uppercase tracking-[0.4em] text-gray-500 font-bold mb-3">
+                            Mixología & Ingredientes</h4>
+                        <p id="detail-ingredients" class="text-gray-300 text-sm leading-relaxed font-light px-2"></p>
+                    </div>
+
+                    <div class="text-center pt-4 border-t border-[#333]">
+                        <h4 class="text-[10px] uppercase tracking-[0.4em] text-gray-500 font-bold mb-4">
+                            Alérgenos</h4>
+                        <div id="detail-alergenos" class="flex justify-center gap-4 mt-2">
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="closeDetail()"
+                    class="mt-10 w-full bg-[#0A0A0A] text-white py-4 rounded font-title font-bold shadow-lg border border-neon-amber active:scale-95 transition-transform uppercase tracking-widest text-xs hover:bg-[#FFBF00] hover:text-black hover:shadow-[0_0_15px_rgba(255,191,0,0.6)]">
+                    Regresar
+                </button>
+            </div>
+
+            <p class="mt-8 text-gray-600 text-[10px] uppercase tracking-[0.5em] font-title">Cocktail Bar</p>
+        </div>
+    </div>
+
+    <script>
+        const categorias = [
+            { id: 'CÓCTELES DE AUTOR', foto: 'portadas/cócteles-de-autor.webp' },
+            { id: 'CLÁSICOS DE LA CASA', foto: 'portadas/clásicos-de-la-casa.webp' },
+            { id: 'SIN ALCOHOL', foto: 'portadas/sin-alcohol.webp' }
+        ];
+
+        const platos = [
+            { id: 1, categoria: 'CÓCTELES DE AUTOR', nombre: 'MESTIZO', precio: '10,00 €', foto: 'cocteles/mestizo.webp', ingredientes: 'Tequila reposado, vermut rosso, naranja, albahaca, soda de sandía.', alergenos: ['🍷'] },
+            { id: 2, categoria: 'CÓCTELES DE AUTOR', nombre: 'CHANGO', precio: '11,00 €', foto: 'cocteles/chango.webp', ingredientes: 'Mezcal, licor de mandarina, fruta de la pasión, pera, agave.', alergenos: [] },
+            { id: 3, categoria: 'CÓCTELES DE AUTOR', nombre: 'HOLBOX', precio: '11,00 €', foto: 'cocteles/holbox.webp', ingredientes: 'Ron añejo, piña, licor de cerezas, naranja, anís, licor de naranja, cerveza de jengibre.', alergenos: [] },
+            { id: 4, categoria: 'CÓCTELES DE AUTOR', nombre: 'MEU AMOR', precio: '10,00 €', foto: 'cocteles/meu_amor.webp', ingredientes: 'Vodka, cachaça, pera, piña, fruta de la pasión, caramelo.', alergenos: ['🌰'] },
+            { id: 5, categoria: 'CÓCTELES DE AUTOR', nombre: 'FIFÍ', precio: '10,00 €', foto: 'cocteles/fifi.webp', ingredientes: 'Ginebra infusionada en fresas y naranja, licor de hierbas, aperitivo de vino blanco, pera, shrub de arándanos y frambuesas.', alergenos: ['🍷'] },
+            { id: 6, categoria: 'CÓCTELES DE AUTOR', nombre: 'KOH LIPE', precio: '10,00 €', foto: 'cocteles/koh_lipe.webp', ingredientes: 'Ron añejo, pera, coco, licor de avellanas, piña, espuma de caramelo.', alergenos: ['🫘', '🌰'] },
+            { id: 7, categoria: 'CÓCTELES DE AUTOR', nombre: '40 GRADOS A LA SOMBRA', precio: '10,00 €', foto: 'cocteles/40_grados.webp', ingredientes: 'Bourbon, whisky de manzana, shrub de arándanos y frambuesas, D.O.M Benedictine, ginger ale.', alergenos: [] },
+            { id: 8, categoria: 'CÓCTELES DE AUTOR', nombre: 'AMAZONIA', precio: '10,00 €', foto: 'cocteles/amazonia.webp', ingredientes: 'Vodka, licor de mandarina, hierbabuena, fruta de la pasión, naranja, espuma de limón y vainilla.', alergenos: ['🫘', '🌰'] },
+            { id: 9, categoria: 'CÓCTELES DE AUTOR', nombre: 'JARDÍN FLORIDO', precio: '10,00 €', foto: 'cocteles/jardin_florido.webp', ingredientes: 'Ginebra infusionada en fresas y naranja, vermut floral, pera, piña, naranja, vainilla, shrub de arándanos y frambuesas.', alergenos: ['🍷'] },
+            { id: 10, categoria: 'CÓCTELES DE AUTOR', nombre: 'COFFEE TOFFEE', precio: '10,00 €', foto: 'cocteles/coffee_toffee.webp', ingredientes: 'Vodka, banana, naranja, café, vainilla, espuma de caramelo, canela.', alergenos: ['🫘', '🌰'] },
+            { id: 11, categoria: 'CLÁSICOS DE LA CASA', nombre: 'ESPRESSO MARTINI', precio: '10,00 €', foto: 'fotos/espresso-martini.webp', ingredientes: 'Vodka, espresso, licor de café, caramelo, chocolate.', alergenos: ['🌰', '🥛'] },
+            { id: 12, categoria: 'CLÁSICOS DE LA CASA', nombre: 'TROPICAL', precio: '10,00 €', foto: 'fotos/tropical.webp', ingredientes: 'Ron añejo, fruta de la pasión, elíxir de encanto, piña, refresco de jengibre.', alergenos: ['🌰'] },
+            { id: 13, categoria: 'CLÁSICOS DE LA CASA', nombre: 'MEDICINA', precio: '11,00 €', foto: 'fotos/medicina.webp', ingredientes: 'Whisky, mezcal, licor de hierbas, limón, jengibre, miel y polen.', alergenos: ['🌸'] },
+            { id: 14, categoria: 'CLÁSICOS DE LA CASA', nombre: 'PORNSTAR MARTINI', precio: '10,00 €', foto: 'fotos/pornstar-martini.webp', ingredientes: 'Vodka, fruta de la pasión, almíbar de vainilla, piña, cava.', alergenos: [] },
+            { id: 15, categoria: 'CLÁSICOS DE LA CASA', nombre: 'PALOMA', precio: '11,00 €', foto: 'fotos/paloma.webp', ingredientes: 'Tequila, mezcal, aperitivo amargo, lima, refresco de pomelo, guindilla.', alergenos: ['🍷'] },
+            { id: 16, categoria: 'CLÁSICOS DE LA CASA', nombre: 'MOSKOW MULE', precio: '10,00 €', foto: 'fotos/moscow-mule.webp', ingredientes: 'Vodka, lima, flor de saúco, cerveza de jengibre.', alergenos: ['🍷'] },
+            { id: 17, categoria: 'CLÁSICOS DE LA CASA', nombre: 'BRAVO', precio: '11,00 €', foto: 'fotos/bravo.webp', ingredientes: 'Whisky, brandy, mezcal, bitter de cacao, bitter de naranja, agave.', alergenos: [] },
+            { id: 18, categoria: 'CLÁSICOS DE LA CASA', nombre: 'BOSQUE', precio: '10,00 €', foto: 'fotos/bosque.webp', ingredientes: 'Ginebra infusionada en fresas y piel de naranja, frutos rojos, lima, licor de hierbas, espuma de vainilla y limón.', alergenos: ['🌰', '🥜', '🫘'] },
+            { id: 19, categoria: 'CLÁSICOS DE LA CASA', nombre: 'COCO Y LIMON', precio: '10,00 €', foto: 'fotos/coco-y-limon.webp', ingredientes: 'Ron añejo, piña, coco, caramelo, refresco de limón.', alergenos: ['🌰', '🥜'] },
+            { id: 20, categoria: 'CLÁSICOS DE LA CASA', nombre: 'BLOODY DE LA CASA', precio: '10,00 €', foto: 'fotos/bloodymary.webp', ingredientes: 'Vodka, licor de chile ancho, piña, salsa Worcestershire, zumo de tomate, cajún, sal.', alergenos: ['🐟', '🌾'] },
+            { id: 21, categoria: 'SIN ALCOHOL', nombre: 'EMMA', precio: '8,00 €', foto: 'fotos/emma.webp', ingredientes: 'Fruta de la pasión, piña, elíxir de encanto, refresco de jengibre.', alergenos: ['🌰', '🥜', '🌾'] },
+            { id: 22, categoria: 'SIN ALCOHOL', nombre: 'NATURALEZA', precio: '8,00 €', foto: 'fotos/naturaleza.webp', ingredientes: 'Ginebra ginebra sin alcohol, limón, albahaca, sirope de especias, soda.', alergenos: ['🍷'] },
+            { id: 23, categoria: 'SIN ALCOHOL', nombre: 'COCO Y LIMON', precio: '8,00 €', foto: 'fotos/coco-y-limon.webp', ingredientes: 'Piña, coco, caramelo, refresco de limón.', alergenos: ['🌰', '🥜'] },
+            { id: 24, categoria: 'SIN ALCOHOL', nombre: 'KOH LIPE', precio: '8,00 €', foto: 'cocteles/koh_lipe.webp', ingredientes: 'Pera, piña, coco, refresco de jengibre, espuma de vainilla y caramelo.', alergenos: ['🌾', '🥜', '🌰', '🫘'] },
+            { id: 25, categoria: 'SIN ALCOHOL', nombre: 'JARDÍN FLORIDO', precio: '8,00 €', foto: 'cocteles/jardin_florido.webp', ingredientes: 'Ginebra ginebra sin alcohol, piña, pera, vermut floral, vainilla, naranja, shrub de arándanos y frambuesas.', alergenos: ['🍷'] },
+            { id: 26, categoria: 'SIN ALCOHOL', nombre: 'MEU AMOR', precio: '8,00 €', foto: 'cocteles/meu_amor.webp', ingredientes: 'Pera, piña, fruta de la pasión, caramelo.', alergenos: ['🌰'] }
+        ];
+
+        function renderCategorias() {
+            const container = document.getElementById('contenedor-categorias-principal');
+            container.innerHTML = categorias.map(cat => `
+                <div onclick="filtrar('${cat.id}')" class="relative h-36 rounded overflow-hidden shadow-lg border border-[#333] active:scale-95 transition-transform cursor-pointer hover:border-neon-amber group">
+                    <img src="${cat.foto}" loading="lazy" class="absolute inset-0 w-full h-full object-cover opacity-70 bg-[#1A1A1A] group-hover:opacity-90 transition-opacity" alt="${cat.id}">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end justify-center pb-4">
+                        <span class="text-white text-xl font-title tracking-[0.2em] uppercase drop-shadow-md text-center px-2 leading-tight">${cat.id}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filtrar(cat) {
+            const filtrados = platos.filter(p => p.categoria === cat);
+
+            document.getElementById('vista-categorias').classList.add('hidden');
+            document.getElementById('vista-platos').classList.remove('hidden');
+            document.getElementById('btn-atras').classList.remove('hidden');
+            document.getElementById('header-title').classList.add('hidden');
+            document.getElementById('titulo-actual').innerText = cat;
+
+            const grid = document.getElementById('grid-platos');
+            grid.innerHTML = '';
+
+            if (filtrados.length === 0) {
+                grid.innerHTML = '<p class="col-span-2 text-center text-gray-500 py-10 font-title text-sm uppercase">Próximamente</p>';
+            } else {
+                filtrados.forEach(plato => {
+                    grid.innerHTML += `
+                        <div onclick="openDetail(${plato.id})" class="bg-card rounded shadow-lg overflow-hidden active:scale-95 transition-transform duration-200 text-center border-b-2 border-[#FFBF00] flex flex-col h-full shadow-[0_4px_10px_rgba(255,191,0,0.1)]">
+                            <img src="${plato.foto}" loading="lazy" class="w-full h-40 object-cover opacity-80 flex-shrink-0">
+                            <div class="p-4 flex flex-col justify-between flex-grow">
+                                <h4 class="font-title text-sm tracking-wide leading-tight text-gray-200">${plato.nombre}</h4>
+                                <p class="text-neon-amber font-title font-bold text-base mt-2 whitespace-nowrap">${plato.precio}</p>
+                            </div>
+                        </div>`;
+                });
+            }
+            history.pushState({ view: 'platos' }, "");
+            window.scrollTo(0, 0);
+        }
+
+        function openDetail(id) {
+            const p = platos.find(x => x.id === id);
+            document.getElementById('detail-img').src = p.foto;
+            document.getElementById('detail-title').innerText = p.nombre;
+            document.getElementById('detail-price').innerText = p.precio;
+
+            const divIngredientes = document.getElementById('detail-ingredients');
+            const divAlergenos = document.getElementById('detail-alergenos');
+
+            divIngredientes.innerText = p.ingredientes;
+            divAlergenos.innerHTML = p.alergenos && p.alergenos.length > 0 ? p.alergenos.map(a => `
+                <div class="w-10 h-10 rounded border border-neon-amber flex items-center justify-center bg-[#050505] text-lg shadow-[0_0_10px_rgba(255,191,0,0.2)]">
+                    ${a}
+                </div>`).join('') : '<span class="text-xs text-gray-600 font-light">Sin alérgenos declarados*</span>';
+
+            document.getElementById('dish-detail').classList.add('open');
+            document.body.style.overflow = 'hidden';
+            history.pushState({ view: 'detalle' }, "");
+        }
+
+        function closeDetail() {
+            document.getElementById('dish-detail').classList.remove('open');
+            document.body.style.overflow = 'auto';
+        }
+
+        window.onload = renderCategorias;
+
+        window.onpopstate = function (event) {
+            const detailOpen = document.getElementById('dish-detail').classList.contains('open');
+            const platosOpen = !document.getElementById('vista-platos').classList.contains('hidden');
+
+            if (detailOpen) {
+                closeDetail();
+            }
+            else if (platosOpen) {
+                document.getElementById('vista-categorias').classList.remove('hidden');
+                document.getElementById('vista-platos').classList.add('hidden');
+                document.getElementById('btn-atras').classList.add('hidden');
+                document.getElementById('header-title').classList.remove('hidden');
+            }
+        };
+    </script>
+
+</body>
+
+</html>

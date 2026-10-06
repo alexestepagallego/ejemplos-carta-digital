@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import CategoryBands from '../components/CategoryBands.astro';
+import CategorySheet from '../components/CategorySheet.astro';
+import { CATEGORIES } from '../data/carta';
+---
+
+<Base
+  title="Carta digital · Pizzería (demo)"
+  description="Modelo de carta digital para pizzería: pizzas, bocadillos XXL, roscas, paninis XXL y calzones."
+>
+  <main class="scroller" data-scroller>
+    <Hero />
+    <CategoryBands />
+  </main>
+
+  {CATEGORIES.map((category, index) => <CategorySheet category={category} index={index} />)}
+</Base>
+
+<script>
+  import { initMenu } from '../lib/menu';
+  import { initHeroVideo } from '../lib/hero';
+
+  initMenu();
+  initHeroVideo();
+</script>
